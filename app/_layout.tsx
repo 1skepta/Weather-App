@@ -18,7 +18,7 @@ export default function RootLayout() {
           headerTitle: () => (
             <Text
               style={{
-                color: "#fff",
+                color: "black",
                 fontSize: 20,
                 paddingTop: 30,
                 fontWeight: 700,
