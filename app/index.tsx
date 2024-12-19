@@ -23,11 +23,11 @@ const WEATHER_API_KEY = "d8f2b37a87b8ae8b504c0e0fbee89b9d";
 const WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/weather";
 
 export default function Index() {
-  const [city, setCity] = useState<string>("Accra"); // Default city is Accra
+  const [city, setCity] = useState<string>("Accra");
   const [weather, setWeather] = useState<Weather | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [isCelsius, setIsCelsius] = useState<boolean>(true); // Tracks Celsius/Fahrenheit state
+  const [isCelsius, setIsCelsius] = useState<boolean>(true);
 
   const getWeather = async () => {
     if (!city) return;
@@ -39,7 +39,7 @@ export default function Index() {
         params: {
           q: city,
           appid: WEATHER_API_KEY,
-          units: "metric", // Use metric units by default (Celsius)
+          units: "metric",
         },
       });
       setWeather(response.data);
@@ -50,22 +50,20 @@ export default function Index() {
   };
 
   const toggleTemperatureUnit = () => {
-    setIsCelsius(!isCelsius); // Toggle between Celsius and Fahrenheit
+    setIsCelsius(!isCelsius);
   };
 
-  // Convert the temperature based on the current unit
   const convertTemperature = (tempInCelsius: number) => {
     if (isCelsius) {
-      return tempInCelsius; // Return Celsius if isCelsius is true
+      return tempInCelsius;
     } else {
-      // Convert Celsius to Fahrenheit
       return tempInCelsius * (9 / 5) + 32;
     }
   };
 
   useEffect(() => {
     getWeather();
-  }, []); // Run only once when the component mounts
+  }, []);
 
   return (
     <LinearGradient colors={["#87CEFA", "#4682B4"]} style={styles.bigContainer}>
