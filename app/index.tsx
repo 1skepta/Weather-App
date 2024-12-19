@@ -7,9 +7,9 @@ import {
   Button,
   ActivityIndicator,
   Image,
+  Pressable,
 } from "react-native";
 import axios from "axios";
-import { StatusBar } from "expo-status-bar";
 
 interface Weather {
   main: { temp: number };
@@ -49,16 +49,24 @@ export default function Index() {
 
   return (
     <>
-      {/* <StatusBar style="dark" /> */}
       <View style={styles.container}>
         <TextInput
           style={styles.input}
           placeholder="Enter city name"
           value={city}
           onChangeText={setCity}
+          placeholderTextColor={"white"}
         />
 
-        <Button title="Get Weather" onPress={getWeather} />
+        <Pressable
+          style={({ pressed }) => [
+            styles.press,
+            pressed ? styles.pressed : null,
+          ]}
+          onPress={getWeather}
+        >
+          <Text style={styles.buttonText}>Get Weather</Text>
+        </Pressable>
 
         {loading && <ActivityIndicator size="large" color="#0000ff" />}
 
@@ -103,6 +111,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
+    color: "white",
   },
   weatherContainer: {
     marginTop: 20,
@@ -130,5 +139,16 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 18,
     marginTop: 20,
+  },
+  press: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+  },
+  pressed: {
+    backgroundColor: "#ccc",
+  },
+  buttonText: {
+    color: "#25292e",
   },
 });
