@@ -23,10 +23,11 @@ const WEATHER_API_KEY = "d8f2b37a87b8ae8b504c0e0fbee89b9d";
 const WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/weather";
 
 export default function Index() {
-  const [city, setCity] = useState<string>("Accra");
+  const [city, setCity] = useState<string>("Accra"); // Default city is Accra
   const [weather, setWeather] = useState<Weather | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCelsius, setIsCelsius] = useState<boolean>(true); // Tracks Celsius/Fahrenheit state
 
   const getWeather = async () => {
     if (!city) return;
@@ -38,7 +39,7 @@ export default function Index() {
         params: {
           q: city,
           appid: WEATHER_API_KEY,
-          units: "metric",
+          units: "metric", // Use metric units by default (Celsius)
         },
       });
       setWeather(response.data);
@@ -48,9 +49,23 @@ export default function Index() {
     setLoading(false);
   };
 
+  const toggleTemperatureUnit = () => {
+    setIsCelsius(!isCelsius); // Toggle between Celsius and Fahrenheit
+  };
+
+  // Convert the temperature based on the current unit
+  const convertTemperature = (tempInCelsius: number) => {
+    if (isCelsius) {
+      return tempInCelsius; // Return Celsius if isCelsius is true
+    } else {
+      // Convert Celsius to Fahrenheit
+      return tempInCelsius * (9 / 5) + 32;
+    }
+  };
+
   useEffect(() => {
     getWeather();
-  }, []);
+  }, []); // Run only once when the component mounts
 
   return (
     <LinearGradient colors={["#87CEFA", "#4682B4"]} style={styles.bigContainer}>
@@ -60,7 +75,7 @@ export default function Index() {
           placeholder="Enter city name"
           value={city}
           onChangeText={setCity}
-          placeholderTextColor={"ash"}
+          placeholderTextColor={"black"}
         />
         <Pressable
           style={({ pressed }) => [
@@ -88,7 +103,21 @@ export default function Index() {
             <Text style={styles.cityName}>
               {weather.name}, {weather.sys.country}
             </Text>
-            <Text style={styles.temperature}>{weather.main.temp}°C</Text>
+            <View style={styles.temperatureContainer}>
+              <Text style={styles.temperature}>
+                {convertTemperature(weather.main.temp).toFixed(1)}°
+                {isCelsius ? "C" : "F"}
+              </Text>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.switchButton,
+                  pressed ? styles.pressed : null,
+                ]}
+                onPress={toggleTemperatureUnit}
+              >
+                <Ionicons name="thermometer" size={30} color="#4682B4" />
+              </Pressable>
+            </View>
             <Text style={styles.weather}>{weather.weather[0].description}</Text>
             <Image
               style={styles.icon}
@@ -137,8 +166,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   cityName: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: "bold",
+  },
+  temperatureContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#ADD8E6",
+    paddingLeft: 70,
+    paddingRight: 70,
+    borderRadius: 30,
+    marginTop: 20,
+    marginBottom: 20,
   },
   temperature: {
     fontSize: 40,
@@ -146,8 +185,14 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   weather: {
-    fontSize: 20,
+    fontSize: 30,
     color: "#555",
+    backgroundColor: "#ADD8E6",
+    paddingLeft: 30,
+    paddingRight: 30,
+    borderRadius: 30,
+    paddingTop: 10,
+    paddingBottom: 10,
   },
   icon: {
     width: 100,
@@ -159,5 +204,15 @@ const styles = StyleSheet.create({
     fontSize: 40,
     marginTop: 20,
     fontWeight: 800,
+  },
+  switchButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  unitText: {
+    fontSize: 20,
+    marginLeft: 5,
+    fontWeight: "bold",
   },
 });
