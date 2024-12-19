@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 import {
   StyleSheet,
   Text,
   View,
   TextInput,
-  Button,
   ActivityIndicator,
   Image,
   Pressable,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import axios from "axios";
 
 interface Weather {
@@ -22,7 +23,7 @@ const WEATHER_API_KEY = "d8f2b37a87b8ae8b504c0e0fbee89b9d";
 const WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/weather";
 
 export default function Index() {
-  const [city, setCity] = useState<string>("");
+  const [city, setCity] = useState<string>("Accra");
   const [weather, setWeather] = useState<Weather | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,17 +48,20 @@ export default function Index() {
     setLoading(false);
   };
 
+  useEffect(() => {
+    getWeather();
+  }, []);
+
   return (
-    <>
-      <View style={styles.container}>
+    <LinearGradient colors={["#87CEFA", "#4682B4"]} style={styles.bigContainer}>
+      <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
           placeholder="Enter city name"
           value={city}
           onChangeText={setCity}
-          placeholderTextColor={"white"}
+          placeholderTextColor={"ash"}
         />
-
         <Pressable
           style={({ pressed }) => [
             styles.press,
@@ -65,53 +69,68 @@ export default function Index() {
           ]}
           onPress={getWeather}
         >
-          <Text style={styles.buttonText}>Get Weather</Text>
+          <Ionicons
+            name="search"
+            size={30}
+            color="#4682B4"
+            style={{ padding: 10 }}
+          />
         </Pressable>
-
-        {loading && <ActivityIndicator size="large" color="#0000ff" />}
-
-        {error ? (
-          <Text style={styles.error}>{error}</Text>
-        ) : (
-          weather && (
-            <View style={styles.weatherContainer}>
-              <Text style={styles.cityName}>
-                {weather.name}, {weather.sys.country}
-              </Text>
-              <Text style={styles.temperature}>{weather.main.temp}°C</Text>
-              <Text style={styles.weather}>
-                {weather.weather[0].description}
-              </Text>
-              <Image
-                style={styles.icon}
-                source={{
-                  uri: `http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`,
-                }}
-              />
-            </View>
-          )
-        )}
       </View>
-    </>
+
+      {loading && <ActivityIndicator size="large" color="#0000ff" />}
+
+      {error ? (
+        <Text style={styles.error}>CITY NOT FOUND</Text>
+      ) : (
+        weather && (
+          <View style={styles.weatherContainer}>
+            <Text style={styles.cityName}>
+              {weather.name}, {weather.sys.country}
+            </Text>
+            <Text style={styles.temperature}>{weather.main.temp}°C</Text>
+            <Text style={styles.weather}>{weather.weather[0].description}</Text>
+            <Image
+              style={styles.icon}
+              source={{
+                uri: `http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`,
+              }}
+            />
+          </View>
+        )
+      )}
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  bigContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#25292e",
-    padding: 20,
+    padding: 30,
+  },
+  inputContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
+    width: "100%",
+    justifyContent: "space-between",
+    padding: 10,
+    borderRadius: 30,
   },
   input: {
-    width: "100%",
-    padding: 10,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    color: "white",
+    borderWidth: 0,
+    color: "black",
+    fontSize: 25,
+    width: "80%",
+    height: 50,
+    marginLeft: 7,
+  },
+  press: { backgroundColor: "black", borderRadius: 50 },
+  pressed: {
+    backgroundColor: "#555",
   },
   weatherContainer: {
     marginTop: 20,
@@ -136,19 +155,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   error: {
-    color: "red",
-    fontSize: 18,
+    color: "white",
+    fontSize: 40,
     marginTop: 20,
-  },
-  press: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-  },
-  pressed: {
-    backgroundColor: "#ccc",
-  },
-  buttonText: {
-    color: "#25292e",
+    fontWeight: 800,
   },
 });
